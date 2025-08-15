@@ -29,12 +29,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- Display Logo (Optional) ---
-# Uncomment and add your logo path if you have a local logo
-# import os
-# if os.path.exists("logo.jpg"):
-#     st.image("logo.jpg", width=150)
-
 st.title("🎉 Blissful Moments - Professional Event Management")
 
 # --- Intro Text ---
@@ -43,38 +37,41 @@ Welcome to **Blissful Moments**, your one-stop destination for unforgettable cel
 We organize:
 - 🎂 Birthday Parties
 - 💍 Weddings & Receptions
-- 🤰 Baby Showers
+- 👶 Baby Showers
 - 🍼 Naming Ceremonies
-- 🎉 Puberty Functions
-- 🏢 Corporate Events
+- 🌸 Puberty Functions
+- 💼 Corporate Events
 
-Let us make your special day **blissfully memorable** ✨
+Let us make your special day **blissfully memorable** 🎊
 """)
 
 # --- Image Gallery ---
 st.header("📸 Event Gallery")
 
 gallery = [
-    ("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=60", "Outdoor wedding setup"),
-    ("https://images.unsplash.com/photo-1526779259212-5642cc76e45a?auto=format&fit=crop&w=800&q=60", "Reception hall"),
-    ("https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=60", "Dining hall"),
-    ("https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=60", "Birthday celebration"),
+    ("https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=800&q=60", "Outdoor wedding setup"),
+    ("https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?auto=format&fit=crop&w=800&q=60", "Reception hall"),
+    ("https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=800&q=60", "Dining hall"),
+    ("https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=800&q=60", "Birthday celebration"),
     ("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=60", "Party hall"),
-    ("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=60", "Function Decor"),
-    ("https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=60", "Couple photoshoot"),
-    ("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=60", "Low-cost setup")
+    ("https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=60", "Function Decor"),
+    ("https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=60", "Couple photoshoot"),
+    ("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=60", "Low-cost setup")
 ]
 
-cols = st.columns(4)
-for idx, (url, caption) in enumerate(gallery):
-    col = cols[idx % 4]
-    try:
-        response = requests.get(url, timeout=5)
-        response.raise_for_status()
-        img = Image.open(BytesIO(response.content))
-        col.image(img, use_container_width=True, caption=caption)
-    except Exception:
-        col.warning(f"Could not load image: {caption}")
+for i in range(0, len(gallery), 4):
+    cols = st.columns(4)
+    for j in range(4):
+        if i + j < len(gallery):
+            img_url, caption = gallery[i + j]
+            with cols[j]:
+                try:
+                    response = requests.get(img_url)
+                    img = Image.open(BytesIO(response.content))
+                    st.image(img, use_container_width=True)
+                    st.caption(caption)
+                except:
+                    st.warning(f"Could not load image: {caption}")
 
 # --- Event Booking Form ---
 st.markdown("---")
@@ -94,78 +91,81 @@ with st.form("event_form"):
         description = st.text_area("Event Description")
 
     submitted = st.form_submit_button("Submit")
-    if submitted and all([event_title.strip(), location.strip(), description.strip()]):
-        st.toast(f"🎉 {event_type} booked successfully!", icon="🎈")
-        time.sleep(0.8)
-        st.balloons()
+    if submitted:
+        if all([event_title.strip(), location.strip(), description.strip()]):
+            st.toast(f"🎉 {event_type} booked successfully!", icon="🎈")
+            time.sleep(0.8)
+            st.balloons()
 
-        st.success(f"🎊 Your {event_type} has been planned successfully! Check below for a celebration summary.")
+            st.success(f"🎊 Your {event_type} has been planned successfully! Check below for a celebration summary.")
 
-        # --- Generate Styled Confirmation Image ---
-        img = Image.new('RGB', (700, 450), color=(255, 245, 250))
-        d = ImageDraw.Draw(img)
-        try:
-            font_title = ImageFont.truetype("arial.ttf", 24)
-            font_body = ImageFont.truetype("arial.ttf", 18)
-        except:
-            font_title = ImageFont.load_default()
-            font_body = ImageFont.load_default()
+            # --- Generate Styled Confirmation Image ---
+            img = Image.new('RGB', (700, 450), color=(255, 245, 250))
+            d = ImageDraw.Draw(img)
+            try:
+                font_title = ImageFont.truetype("arial.ttf", 24)
+                font_body = ImageFont.truetype("arial.ttf", 18)
+            except:
+                font_title = ImageFont.load_default()
+                font_body = ImageFont.load_default()
 
-        d.rectangle([10, 10, 690, 440], outline=(200, 100, 150), width=4)
-        d.text((30, 30), "🎉 Event Summary 🎉", font=font_title, fill=(120, 0, 90))
+            d.rectangle([10, 10, 690, 440], outline=(200, 100, 150), width=4)
+            d.text((30, 30), "🎉 Event Summary 🎉", font=font_title, fill=(120, 0, 90))
 
-        details = [
-            f"Event Type: {event_type}",
-            f"Title: {event_title}",
-            f"Date: {event_date.strftime('%Y-%m-%d')}",
-            f"Guests: {int(guest_count)}",
-            f"Location: {location}",
-            f"Description: {description[:80]}..."
-        ]
+            details = [
+                f"Event Type: {event_type}",
+                f"Title: {event_title}",
+                f"Date: {event_date.strftime('%Y-%m-%d')}",
+                f"Guests: {int(guest_count)}",
+                f"Location: {location}",
+                f"Description: {description[:80]}..."
+            ]
 
-        y = 80
-        for line in details:
-            d.text((40, y), line, font=font_body, fill=(0, 0, 0))
-            y += 40
+            y = 80
+            for line in details:
+                d.text((40, y), line, font=font_body, fill=(0, 0, 0))
+                y += 40
 
-        img_path = "confirmation.png"
-        img.save(img_path)
+            img_path = "confirmation.png"
+            img.save(img_path)
 
-        st.markdown("---")
-        with st.container():
-            st.markdown("""
-                <div style='background-color:#ffe6f0; padding:20px; border-radius:15px; border:2px solid #ff69b4;'>
-                    <h3 style='text-align:center;'>🎉 Congratulations! 🎉</h3>
-                    <p style='text-align:center;'>Here's your custom event summary image:</p>
-                </div>
-            """, unsafe_allow_html=True)
-            st.image(img_path, caption="🎈 Your Event Summary")
+            # --- Celebration Popup Style ---
+            st.markdown("---")
+            with st.container():
+                st.markdown("""
+                    <div style='background-color:#ffe6f0; padding:20px; border-radius:15px; border:2px solid #ff69b4;'>
+                        <h3 style='text-align:center;'>🎉 Congratulations! 🎉</h3>
+                        <p style='text-align:center;'>Here's your custom event summary image:</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                st.image(img_path, caption="🎊 Your Event Summary")
 
-        with open(img_path, "rb") as file:
-            st.download_button(
-                label="📥 Download Event Summary",
-                data=file,
-                file_name="Event_Summary.png",
-                mime="image/png"
-            )
-    elif submitted:
-        st.error("Please fill in all fields.")
+            # --- Download Button ---
+            with open(img_path, "rb") as file:
+                st.download_button(
+                    label="📥 Download Event Summary",
+                    data=file,
+                    file_name="Event_Summary.png",
+                    mime="image/png"
+                )
+        else:
+            st.error("Please fill in all fields.")
 
 # --- About Us ---
 st.markdown("---")
-st.header("💖 About Us")
+st.header("🌟 About Us")
 st.markdown("""
 Blissful Moments is a team of passionate event planners turning dreams into reality.  
 From small celebrations to big days, we handle everything — decor, food, music, and memories.
 
-✨ **Your joy is our passion.**
+🎈 **Your joy is our passion.**
 """)
 
 # --- Social Media Links ---
 st.markdown("---")
-st.header("🌐 Connect With Us")
+st.header("🔗 Connect With Us")
 st.markdown("""
-- 📘 [Facebook](https://facebook.com)
+- 👍 [Facebook](https://facebook.com)
 - 📸 [Instagram](https://instagram.com)
 - 🐦 [Twitter](https://twitter.com)
 - 💼 [LinkedIn](https://linkedin.com)
