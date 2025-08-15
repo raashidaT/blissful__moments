@@ -3,7 +3,6 @@ from datetime import date
 from PIL import Image, ImageDraw, ImageFont
 import os
 import time
-from pathlib import Path
 
 st.set_page_config(page_title="Blissful Moments", page_icon="🎉", layout="wide")
 
@@ -20,8 +19,11 @@ st.markdown(
 )
 
 # --- Display Logo ---
-if os.path.exists("logo.jpg"):
-    st.image("logo.jpg", width=150)
+logo_path = "bm_logo.png"  # Updated logo file
+if os.path.exists(logo_path):
+    st.image(logo_path, width=150)
+else:
+    st.warning("Logo image could not be loaded.")
 
 st.title("🎉 Blissful Moments - Professional Event Management")
 
@@ -42,16 +44,11 @@ Let us make your special day **blissfully memorable** ✨
 # --- Image Gallery ---
 st.header("📸 Event Gallery")
 
-# Updated gallery list
 gallery = [
-    ("img1.jpg", "Outdoor wedding setup"),
-    ("img1.jpeg", "Reception hall"),  # Your uploaded image
-    ("img3.jpg", "Dining hall"),
-    ("img4.jpg", "Birthday celebration"),
-    ("img5.jpg", "Party hall"),
-    ("img6.jpg", "Function Decor"),
-    ("img7.jpg", "Couple photoshoot"),
-    ("img8.jpg", "Low-cost setup")
+    ("img1.jpeg", "Outdoor wedding setup"),
+    ("A_photograph_showcases_an_indoor_birthday_party_se.png", "Birthday celebration"),
+    ("A_high-resolution_photograph_showcases_an_opulent,.png", "Party dining hall"),
+    ("A_photograph_captures_a_newlywed_couple_posing_in_.png", "Couple photoshoot")
 ]
 
 for i in range(0, len(gallery), 4):
@@ -82,3 +79,91 @@ with st.form("event_form"):
     with col2:
         guest_count = st.number_input("Expected Guests", min_value=10, max_value=1000, step=10)
         location = st.text_input("Event Location")
+        description = st.text_area("Event Description")
+
+    submitted = st.form_submit_button("Submit")
+    if submitted and event_title and location and description:
+        st.toast(f"🎉 {event_type} booked successfully!", icon="🥳")
+        time.sleep(0.8)
+        st.balloons()
+
+        st.success(f"🎊 Your {event_type} has been planned successfully! Check below for a celebration summary.")
+
+        # --- Generate Styled Confirmation Image ---
+        img = Image.new('RGB', (700, 450), color=(255, 245, 250))
+        d = ImageDraw.Draw(img)
+        try:
+            font_title = ImageFont.truetype("arial.ttf", 24)
+            font_body = ImageFont.truetype("arial.ttf", 18)
+        except:
+            font_title = ImageFont.load_default()
+            font_body = ImageFont.load_default()
+
+        d.rectangle([10, 10, 690, 440], outline=(200, 100, 150), width=4)
+        d.text((30, 30), "🎉 Event Summary 🎉", font=font_title, fill=(120, 0, 90))
+
+        details = [
+            f"Event Type: {event_type}",
+            f"Title: {event_title}",
+            f"Date: {event_date.strftime('%Y-%m-%d')}",
+            f"Guests: {int(guest_count)}",
+            f"Location: {location}",
+            f"Description: {description[:80]}..."
+        ]
+
+        y = 80
+        for line in details:
+            d.text((40, y), line, font=font_body, fill=(0, 0, 0))
+            y += 40
+
+        img_path = "confirmation.png"
+        img.save(img_path)
+
+        # --- Celebration Popup Style ---
+        st.markdown("---")
+        with st.container():
+            st.markdown("""
+                <div style='background-color:#ffe6f0; padding:20px; border-radius:15px; border:2px solid #ff69b4;'>
+                    <h3 style='text-align:center;'>🎉 Congratulations! 🎉</h3>
+                    <p style='text-align:center;'>Here's your custom event summary image:</p>
+                </div>
+            """, unsafe_allow_html=True)
+            st.image(img_path, caption="🖼️ Your Event Summary")
+
+        # --- Download Button ---
+        with open(img_path, "rb") as file:
+            st.download_button(
+                label="📥 Download Event Summary",
+                data=file,
+                file_name="Event_Summary.png",
+                mime="image/png"
+            )
+
+    elif submitted:
+        st.error("Please fill in all fields.")
+
+# --- About Us ---
+st.markdown("---")
+st.header("📣 About Us")
+st.markdown("""
+Blissful Moments is a team of passionate event planners turning dreams into reality.  
+From small celebrations to big days, we handle everything — decor, food, music, and memories.
+
+✨ **Your joy is our passion.**
+""")
+
+# --- Social Media Links ---
+st.markdown("---")
+st.header("🔗 Connect With Us")
+st.markdown("""
+- 📘 [Facebook](https://facebook.com)
+- 📸 [Instagram](https://instagram.com)
+- 🐦 [Twitter](https://twitter.com)
+- 💼 [LinkedIn](https://linkedin.com)
+""")
+
+# --- Footer ---
+st.markdown(
+    "<div style='text-align:center; color:#aaa;'>© 2025 Blissful Moments. All Rights Reserved.</div>",
+    unsafe_allow_html=True
+)
