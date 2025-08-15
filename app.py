@@ -19,11 +19,8 @@ st.markdown(
 )
 
 # --- Display Logo ---
-logo_path = "bm_logo.png"  # Updated logo file
-if os.path.exists(logo_path):
-    st.image(logo_path, width=150)
-else:
-    st.warning("Logo image could not be loaded.")
+if os.path.exists("logo.jpg"):
+    st.image("logo.jpg", width=150)
 
 st.title("🎉 Blissful Moments - Professional Event Management")
 
@@ -45,10 +42,14 @@ Let us make your special day **blissfully memorable** ✨
 st.header("📸 Event Gallery")
 
 gallery = [
-    ("img1.jpeg", "Outdoor wedding setup"),
-    ("A_photograph_showcases_an_indoor_birthday_party_se.png", "Birthday celebration"),
-    ("A_high-resolution_photograph_showcases_an_opulent,.png", "Party dining hall"),
-    ("A_photograph_captures_a_newlywed_couple_posing_in_.png", "Couple photoshoot")
+    ("img1.jpg", "Outdoor wedding setup"),
+    ("img2.jpg", "Reception hall"),
+    ("img3.jpg", "Dining hall"),
+    ("img4.jpg", "Birthday celebration"),
+    ("img5.jpg", "Party hall"),
+    ("img6.jpg", "Function Decor"),
+    ("img7.jpg", "Couple photoshoot"),
+    ("img8.jpg", "Low-cost setup")
 ]
 
 for i in range(0, len(gallery), 4):
@@ -83,6 +84,7 @@ with st.form("event_form"):
 
     submitted = st.form_submit_button("Submit")
     if submitted and event_title and location and description:
+        # Popup-like toast
         st.toast(f"🎉 {event_type} booked successfully!", icon="🥳")
         time.sleep(0.8)
         st.balloons()
